@@ -1,0 +1,198 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 60;
+	objects = {
+		2B5347C69DF89FDD01FFB25E /* file:APIClient.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = APIClient.swift;
+			sourceTree = "<group>";
+		};
+		72B94A439FA16CE34ADCD5F7 /* build:APIClient.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 2B5347C69DF89FDD01FFB25E /* APIClient.swift */;
+		};
+		3B78ADA789F36B91A60D6ED7 /* file:AccountView.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AccountView.swift;
+			sourceTree = "<group>";
+		};
+		512D54E66641F634C72B078C /* build:AccountView.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 3B78ADA789F36B91A60D6ED7 /* AccountView.swift */;
+		};
+		62668F49E96F285B65289B16 /* file:AppState.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AppState.swift;
+			sourceTree = "<group>";
+		};
+		D5C7C47481CFC984EE6D07BA /* build:AppState.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 62668F49E96F285B65289B16 /* AppState.swift */;
+		};
+		4B1E55E6EE296E23349C7BED /* file:MapHomeView.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MapHomeView.swift;
+			sourceTree = "<group>";
+		};
+		517F97832913EEAC72473110 /* build:MapHomeView.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 4B1E55E6EE296E23349C7BED /* MapHomeView.swift */;
+		};
+		78FD430803560F137BDECEE8 /* file:Models.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Models.swift;
+			sourceTree = "<group>";
+		};
+		C28E3B592A560C32484F497E /* build:Models.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 78FD430803560F137BDECEE8 /* Models.swift */;
+		};
+		5F6E801146E6DFDCE7E3563A /* file:PlaceDetailView.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = PlaceDetailView.swift;
+			sourceTree = "<group>";
+		};
+		2F572B784FB22C89DBA4141A /* build:PlaceDetailView.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 5F6E801146E6DFDCE7E3563A /* PlaceDetailView.swift */;
+		};
+		F90532124C001E192BF96B55 /* file:SubmissionView.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SubmissionView.swift;
+			sourceTree = "<group>";
+		};
+		311B8609DA9A5CF4EDBCAEF7 /* build:SubmissionView.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = F90532124C001E192BF96B55 /* SubmissionView.swift */;
+		};
+		F8A14FD33FC816DB3DE345D0 /* file:iYosiApp.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = iYosiApp.swift;
+			sourceTree = "<group>";
+		};
+		CE05C34EFA24179A7E7662E3 /* build:iYosiApp.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = F8A14FD33FC816DB3DE345D0 /* iYosiApp.swift */;
+		};
+		3A94BB07224E6FBA2B7113D3 /* file:Assets */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		453924BD81A2F3A51A943C3A /* build:Assets */ = {
+			isa = PBXBuildFile;
+			fileRef = 3A94BB07224E6FBA2B7113D3 /* Assets.xcassets */;
+		};
+		75B13235D681EFADD9C29A79 /* file:Info */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		CBD763FA4F6B1F31D1E103C3 /* file:Product */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = iYosi.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DF891E785808226D241F246E /* group:root */ = {
+			isa = PBXGroup;
+			children = (CF8D0BD4B75E8C2C174692A5 /* iYosi */, 00C45FD35CB0F9C5F764F070 /* Products */,);
+			sourceTree = "<group>";
+		};
+		CF8D0BD4B75E8C2C174692A5 /* group:app */ = {
+			isa = PBXGroup;
+			children = (2B5347C69DF89FDD01FFB25E /* APIClient.swift */, 3B78ADA789F36B91A60D6ED7 /* AccountView.swift */, 62668F49E96F285B65289B16 /* AppState.swift */, 4B1E55E6EE296E23349C7BED /* MapHomeView.swift */, 78FD430803560F137BDECEE8 /* Models.swift */, 5F6E801146E6DFDCE7E3563A /* PlaceDetailView.swift */, F90532124C001E192BF96B55 /* SubmissionView.swift */, F8A14FD33FC816DB3DE345D0 /* iYosiApp.swift */, 3A94BB07224E6FBA2B7113D3 /* Assets.xcassets */, 75B13235D681EFADD9C29A79 /* Info.plist */,);
+			path = iYosi;
+			sourceTree = "<group>";
+		};
+		00C45FD35CB0F9C5F764F070 /* group:products */ = {
+			isa = PBXGroup;
+			children = (CBD763FA4F6B1F31D1E103C3 /* iYosi.app */,);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1CDF2F71A52B082132B04DFF /* phase:sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (72B94A439FA16CE34ADCD5F7 /* APIClient.swift */, 512D54E66641F634C72B078C /* AccountView.swift */, D5C7C47481CFC984EE6D07BA /* AppState.swift */, 517F97832913EEAC72473110 /* MapHomeView.swift */, C28E3B592A560C32484F497E /* Models.swift */, 2F572B784FB22C89DBA4141A /* PlaceDetailView.swift */, 311B8609DA9A5CF4EDBCAEF7 /* SubmissionView.swift */, CE05C34EFA24179A7E7662E3 /* iYosiApp.swift */,);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C02F1309AF4906C92F1EAD44 /* phase:resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (453924BD81A2F3A51A943C3A /* Assets.xcassets */,);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29C7B681C8D62CBAC94D51C0 /* target:app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7ADE71700E9404B10E13B577 /* Build configuration list for PBXNativeTarget "iYosi" */;
+			buildPhases = (1CDF2F71A52B082132B04DFF /* Sources */, C02F1309AF4906C92F1EAD44 /* Resources */,);
+			buildRules = ();
+			dependencies = ();
+			name = iYosi;
+			productName = iYosi;
+			productReference = CBD763FA4F6B1F31D1E103C3 /* iYosi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		98F54143AB4E86B28C3AFEE0 /* project */ = {
+			isa = PBXProject;
+			attributes = { LastUpgradeCheck = 1600; TargetAttributes = { 29C7B681C8D62CBAC94D51C0 = { CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; }; }; };
+			buildConfigurationList = 12D04D787E90C9B967248BFD /* Build configuration list for PBXProject "iYosi" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base,);
+			mainGroup = DF891E785808226D241F246E /* Main group */;
+			productRefGroup = 00C45FD35CB0F9C5F764F070 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (29C7B681C8D62CBAC94D51C0 /* iYosi */,);
+		};
+		877A6BA951A2EA0025A2ABE8 /* config:project:Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.9; DEBUG_INFORMATION_FORMAT = dwarf; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; };
+			name = Debug;
+		};
+		1E0DDAF384B911BF23BC77ED /* config:target:Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = iYosi/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.orcasolutions.iyosi; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_VERSION = 5.9; };
+			name = Debug;
+		};
+		959134B361DD7E21ADEA3164 /* config:project:Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.9; DEBUG_INFORMATION_FORMAT = dwarf-with-dsym; SWIFT_COMPILATION_MODE = wholemodule; };
+			name = Release;
+		};
+		A1EFC270D4D6011185E1BD4D /* config:target:Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = iYosi/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.orcasolutions.iyosi; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_VERSION = 5.9; };
+			name = Release;
+		};
+		12D04D787E90C9B967248BFD /* configlist:project */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (877A6BA951A2EA0025A2ABE8 /* Debug */, 959134B361DD7E21ADEA3164 /* Release */,);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7ADE71700E9404B10E13B577 /* configlist:target */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (1E0DDAF384B911BF23BC77ED /* Debug */, A1EFC270D4D6011185E1BD4D /* Release */,);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+	};
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+}
