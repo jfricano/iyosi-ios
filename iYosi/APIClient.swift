@@ -65,9 +65,8 @@ struct APIClient {
     func nearby(_ point: GeoPoint) async throws -> Page<PlaceSummary> {
         try await request("/v1/places/nearby", query: [item(String(point.lat), "lat"), item(String(point.lon), "lon"), item("200", "radius_m")])
     }
-    func suggestions(_ query: String) async throws -> [AddressSuggestion] {
-        let result: AddressSuggestions = try await request("/v1/address-suggestions", query: [item(query, "q")])
-        return result.items
+    func suggestions(_ query: String) async throws -> AddressSuggestions {
+        try await request("/v1/address-suggestions", query: [item(query, "q")])
     }
     func reviews(_ id: String, cursor: String? = nil) async throws -> Page<PublicReview> {
         try await request("/v1/places/\(escaped(id))/reviews", query: cursor.map { [item($0, "cursor")] } ?? [])

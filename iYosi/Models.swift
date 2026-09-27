@@ -101,7 +101,10 @@ struct AddressSuggestion: Decodable, Identifiable {
     let location: GeoPoint
     var id: String { "\(label):\(location.lat):\(location.lon)" }
 }
-struct AddressSuggestions: Decodable { let items: [AddressSuggestion] }
+struct AddressSuggestions: Decodable {
+    let items: [AddressSuggestion]
+    let provider: String?
+}
 
 struct PublicReview: Decodable, Identifiable {
     let id: String

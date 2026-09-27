@@ -8,7 +8,7 @@ Open [iYosi.xcodeproj](iYosi.xcodeproj) in Xcode 16 or later and run the `iYosi`
 
 Start the separate iYosi API using its README. When all three repositories are checked out locally, the API is in the sibling `api/` folder. The iOS Simulator defaults to `http://localhost:8000`. From the app's Account screen, open **API server settings** to enter a different base URL. Remote URLs must use HTTPS; changing the server signs out the current account. A physical iPhone needs a reachable HTTPS endpoint. Browsing is anonymous; registration and sign-in are needed only for contributions.
 
-Address and landmark search calls the API's `/v1/address-suggestions` endpoint. It shows a configuration message until the API operator sets `GEOCODER_URL`. Map imagery uses Apple Maps. The app asks for foreground location only after **Near me** is tapped.
+Address and landmark search calls the API's `/v1/address-suggestions` endpoint. It shows a configuration message until the API operator sets `GEOAPIFY_API_KEY` or a compatible `GEOCODER_URL`. Geoapify results include provider and OpenStreetMap attribution links. Map imagery uses Apple Maps. The app asks for foreground location only after **Near me** is tapped.
 
 ## Included flows
 
@@ -23,7 +23,7 @@ The admin moderation interface and public-launch age assurance/privacy operation
 
 ## Verification
 
-The project builds for a generic iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). It has been installed and launched on an iPhone 18 Pro simulator, and the local Compose API's `/health` returns 200. The database has no published places until an administrator publishes reviewed submissions, so the map initially shows an empty state.
+The project builds for a generic iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). It has been installed and launched on an iPhone 18 Pro simulator against the isolated synthetic demo API, which shows four fictional pins and working local address suggestions. The normal database contains no published places until an administrator publishes reviewed submissions.
 
 ## License
 

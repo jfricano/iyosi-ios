@@ -21,6 +21,7 @@ struct MapHomeView: View {
     @State private var statuses: Set<AdvisoryStatus> = [.verifiedDesignated, .communityReported, .disputed]
     @State private var search = ""
     @State private var suggestions: [AddressSuggestion] = []
+    @State private var suggestionProvider: String?
     @State private var searchError: String?
     @State private var mapError: String?
     @State private var loading = false
@@ -109,7 +110,7 @@ struct MapHomeView: View {
                             .textInputAutocapitalization(.words)
                             .autocorrectionDisabled()
                             .accessibilityLabel("Search NCR address or landmark")
-                        if !search.isEmpty { Button { search = ""; suggestions = [] } label: { Image(systemName: "xmark.circle.fill") }.accessibilityLabel("Clear search") }
+                        if !search.isEmpty { Button { search = ""; suggestions = []; suggestionProvider = nil } label: { Image(systemName: "xmark.circle.fill") }.accessibilityLabel("Clear search") }
                     }.padding(10).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     if let searchError { Text(searchError).font(.footnote).foregroundStyle(.secondary) }
                     if !suggestions.isEmpty {
@@ -117,8 +118,15 @@ struct MapHomeView: View {
                             ForEach(suggestions) { suggestion in
                                 Button(suggestion.label) {
                                     position = .region(.init(center: suggestion.location.coordinate, span: .init(latitudeDelta: 0.025, longitudeDelta: 0.025)))
-                                    search = ""; suggestions = []
+                                    search = ""; suggestions = []; suggestionProvider = nil
                                 }.frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 4)
+                            }
+                            if suggestionProvider == "geoapify" {
+                                HStack(spacing: 4) {
+                                    Link("Powered by Geoapify", destination: URL(string: "https://www.geoapify.com/")!)
+                                    Text("·")
+                                    Link("© OpenStreetMap contributors", destination: URL(string: "https://www.openstreetmap.org/copyright")!)
+                                }.font(.caption2)
                             }
                         }.padding(10).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
@@ -187,12 +195,16 @@ struct MapHomeView: View {
         loading = false
     }
     private func searchAddress() async {
-        suggestions = []; searchError = nil
+        suggestions = []; suggestionProvider = nil; searchError = nil
         let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
         guard query.count >= 3 else { return }
         try? await Task.sleep(for: .milliseconds(350))
         guard !Task.isCancelled else { return }
-        do { suggestions = try await state.api.suggestions(query) }
+        do {
+            let result = try await state.api.suggestions(query)
+            suggestions = result.items
+            suggestionProvider = result.provider
+        }
         catch {
             if !Task.isCancelled { searchError = (error as? APIError)?.code == "geocoder_unavailable" ? "Address search is not configured on this server." : error.localizedDescription }
         }
