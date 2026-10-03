@@ -48,31 +48,51 @@ struct SubmissionView: View {
     }
 
     var body: some View {
-        AuthRequiredView {
-            NavigationStack {
-                Group {
-                    if let acknowledgement { success(acknowledgement) }
-                    else { form }
-                }
-                .navigationTitle(correcting == nil ? "Propose a place" : "Suggest correction")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } }
-                    if acknowledgement == nil { ToolbarItem(placement: .confirmationAction) { Button("Submit") { Task { await submit() } }.disabled(!canSubmit) } }
+        NavigationStack {
+            Group {
+                if !state.isSignedIn { AuthView(embedded: true) }
+                else if let acknowledgement { success(acknowledgement) }
+                else { form }
+            }
+            .navigationTitle(correcting == nil ? "Propose a place" : "Suggest correction")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } }
+                if state.isSignedIn && acknowledgement == nil {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button { Task { await submit() } } label: {
+                            if busy { ProgressView() }
+                            else { Text("Submit").fontWeight(.semibold) }
+                        }.disabled(!canSubmit)
+                    }
                 }
             }
+            .guideScreen()
         }
     }
     private var form: some View {
         Form {
+            Section {
+                VStack(alignment: .leading, spacing: 10) {
+                    GuideEyebrow(text: correcting == nil ? "Share local knowledge" : "Help keep the guide current")
+                    Text(correcting == nil ? "What did you find?" : "What has changed?")
+                        .font(GuideTheme.editorial(28)).fixedSize(horizontal: false, vertical: true)
+                    Text("Share what you observed. A community report does not establish permission to smoke.")
+                        .font(GuideTheme.body(15, relativeTo: .subheadline)).foregroundStyle(GuideTheme.muted)
+                }.padding(.vertical, 6)
+            }.listRowBackground(Color.clear)
             Section("Pin locations") {
                 Text("Tap the map to place the \(selectingEntrance ? "public entrance" : "reported area") pin.")
-                    .font(.footnote)
+                    .font(.footnote).foregroundStyle(GuideTheme.muted)
                 MapReader { proxy in
                     Map(position: $position) {
-                        Annotation("Reported area", coordinate: pin.coordinate) { Image(systemName: "mappin.circle.fill").font(.largeTitle).foregroundStyle(.teal) }
+                        Annotation("Reported area", coordinate: pin.coordinate) {
+                            mapPin(symbol: "diamond.fill", color: GuideTheme.amber, background: GuideTheme.amberPale)
+                        }
                         if let accessPoint {
-                            Annotation("Public entrance", coordinate: accessPoint.coordinate) { Image(systemName: "door.left.hand.open").font(.title).foregroundStyle(.blue) }
+                            Annotation("Public entrance", coordinate: accessPoint.coordinate) {
+                                mapPin(symbol: "door.left.hand.open", color: GuideTheme.teal, background: GuideTheme.tealPale)
+                            }
                         }
                     }
                     .onTapGesture { point in
@@ -82,6 +102,8 @@ struct SubmissionView: View {
                     }
                 }
                 .frame(height: 260)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay { RoundedRectangle(cornerRadius: 8).stroke(GuideTheme.line, lineWidth: 1) }
                 .accessibilityLabel("Map for selecting the reported area or public entrance pin")
                 Picker("Tap sets", selection: $selectingEntrance) {
                     Text("Reported area").tag(false)
@@ -89,35 +111,60 @@ struct SubmissionView: View {
                 }.pickerStyle(.segmented)
                 if accessPoint != nil { Button("Remove entrance pin") { accessPoint = nil } }
                 Text("Area: \(pin.lat.formatted(.number.precision(.fractionLength(5)))), \(pin.lon.formatted(.number.precision(.fractionLength(5))))")
-                    .font(.caption.monospacedDigit())
-            }
-            Section("Place") {
+                    .font(.caption.monospacedDigit()).foregroundStyle(GuideTheme.muted)
+            }.listRowBackground(GuideTheme.surface)
+            Section {
                 TextField("Name or landmark", text: $name)
                 Picker("Type", selection: $kind) { ForEach(PlaceKind.allCases) { Text($0.title).tag($0) } }
                 if kind == .venueDesignated { Toggle("Inside establishment", isOn: $insideVenue) }
                 TextField("Address label (optional)", text: $address)
-                TextField("Public access notes (optional)", text: $notes, axis: .vertical)
+                TextField("Access note (optional)", text: $notes, axis: .vertical)
                 TextField("How do you know about this place?", text: $basis, axis: .vertical)
-                Text("Every proposal stays pending until an administrator reviews it. You cannot set verified status.")
-                    .font(.footnote).foregroundStyle(.secondary)
-            }
+            } header: { Text("Place") } footer: {
+                Text("Every proposal stays pending until an administrator reviews it. You cannot set evidence-reviewed designation.")
+            }.listRowBackground(GuideTheme.surface)
             Section("Nearby possible duplicates") {
-                if let nearbyError { Text(nearbyError).font(.footnote).foregroundStyle(.secondary) }
-                else if nearby.isEmpty { Text("No published places found within 200 m.").foregroundStyle(.secondary) }
+                if let nearbyError { Text(nearbyError).font(.footnote).foregroundStyle(GuideTheme.muted) }
+                else if nearby.isEmpty { Text("No published places found within 200 m.").foregroundStyle(GuideTheme.muted) }
                 ForEach(nearby) { candidate in
                     Label(candidate.name, systemImage: candidate.kind.symbol)
                 }
                 if !closeDuplicates.isEmpty && correcting == nil {
-                    Text("A place is within 50 m. Open that place and suggest a correction instead.")
-                        .foregroundStyle(.orange)
+                    GuideNotice(text: "A place is within 50 m. Open that place and suggest a correction instead.", symbol: "diamond.fill", warning: true)
                 }
+            }.listRowBackground(GuideTheme.surface)
+            if let error {
+                Section { GuideNotice(text: error, symbol: "exclamationmark.triangle", warning: true) }
+                    .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
             }
-            if let error { Section { Text(error).foregroundStyle(.red) } }
         }
+        .guideForm()
         .task(id: pin) { await checkNearby() }
     }
+    private func mapPin(symbol: String, color: Color, background: Color) -> some View {
+        Image(systemName: symbol)
+            .font(.title3.weight(.semibold)).foregroundStyle(color)
+            .padding(10).background(background, in: Circle())
+            .overlay { Circle().stroke(color, lineWidth: 2) }
+    }
     private func success(_ result: Acknowledgement) -> some View {
-        ContentUnavailableView("Proposal received", systemImage: "clock.badge.checkmark", description: Text("Reference \(result.id). It will stay pending until reviewed."))
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Image(systemName: "clock.badge.checkmark")
+                    .font(.largeTitle).foregroundStyle(GuideTheme.teal)
+                    .padding(16).background(GuideTheme.tealPale, in: RoundedRectangle(cornerRadius: 8))
+                    .accessibilityHidden(true)
+                GuideEyebrow(text: "Thank you for contributing")
+                Text("Proposal received.").font(GuideTheme.editorial(32)).fixedSize(horizontal: false, vertical: true)
+                Text("Your proposal will stay pending until an administrator reviews it.")
+                    .foregroundStyle(GuideTheme.muted)
+                GuideFact(title: "Reference", value: result.id, symbol: "doc.text")
+                    .textSelection(.enabled)
+                GuideNotice(text: "A submission is not permission to smoke. Check the current status and access note before visiting.")
+                Button("Done") { dismiss() }
+                    .buttonStyle(GuideButtonStyle())
+            }.guideCard().padding(20)
+        }.guideScreen()
     }
     private func checkNearby() async {
         nearby = []; nearbyError = nil
