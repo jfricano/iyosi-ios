@@ -23,7 +23,11 @@ The admin moderation interface and public-launch age assurance/privacy operation
 
 ## Verification
 
-The project builds for a generic iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). It has been installed and launched on an iPhone 18 Pro simulator against the isolated synthetic demo API, which shows four fictional pins and working local address suggestions. The normal database contains no published places until an administrator publishes reviewed submissions.
+Debug and Release builds pass for a generic arm64 iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). The landing-page design update was checked on an iPhone 18 Pro simulator using read-only fictional fixtures, including dark appearance and accessibility text sizes. Live account and contribution requests were not repeated for that visual check. The normal database contains no published places until an administrator publishes reviewed submissions.
+
+## Shared design
+
+The app follows the landing page's warm paper surfaces, ink typography, teal reviewed labels, amber community reports, warning labels, and fictional city illustration. MapKit remains the geographic map. Native controls, Dynamic Type, dark appearance, and the API's status/directions rules are preserved. See [design notes and simulator previews](docs/DESIGN.md) for the handoff and repeatable visual checks.
 
 ## License
 

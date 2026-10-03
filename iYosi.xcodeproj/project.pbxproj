@@ -34,6 +34,26 @@
 			isa = PBXBuildFile;
 			fileRef = 62668F49E96F285B65289B16 /* AppState.swift */;
 		};
+		FAEC4CCA86B402429396F18D /* file:DesignPreview.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = DesignPreview.swift;
+			sourceTree = "<group>";
+		};
+		10D15A199F54F09B37829B2D /* build:DesignPreview.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = FAEC4CCA86B402429396F18D /* DesignPreview.swift */;
+		};
+		5D0C2DB69CEFE044C7BE08CA /* file:GuideTheme.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = GuideTheme.swift;
+			sourceTree = "<group>";
+		};
+		D9519749007E47D80E7D619A /* build:GuideTheme.swift */ = {
+			isa = PBXBuildFile;
+			fileRef = 5D0C2DB69CEFE044C7BE08CA /* GuideTheme.swift */;
+		};
 		4B1E55E6EE296E23349C7BED /* file:MapHomeView.swift */ = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -114,7 +134,7 @@
 		};
 		CF8D0BD4B75E8C2C174692A5 /* group:app */ = {
 			isa = PBXGroup;
-			children = (2B5347C69DF89FDD01FFB25E /* APIClient.swift */, 3B78ADA789F36B91A60D6ED7 /* AccountView.swift */, 62668F49E96F285B65289B16 /* AppState.swift */, 4B1E55E6EE296E23349C7BED /* MapHomeView.swift */, 78FD430803560F137BDECEE8 /* Models.swift */, 5F6E801146E6DFDCE7E3563A /* PlaceDetailView.swift */, F90532124C001E192BF96B55 /* SubmissionView.swift */, F8A14FD33FC816DB3DE345D0 /* iYosiApp.swift */, 3A94BB07224E6FBA2B7113D3 /* Assets.xcassets */, 75B13235D681EFADD9C29A79 /* Info.plist */,);
+			children = (2B5347C69DF89FDD01FFB25E /* APIClient.swift */, 3B78ADA789F36B91A60D6ED7 /* AccountView.swift */, 62668F49E96F285B65289B16 /* AppState.swift */, FAEC4CCA86B402429396F18D /* DesignPreview.swift */, 5D0C2DB69CEFE044C7BE08CA /* GuideTheme.swift */, 4B1E55E6EE296E23349C7BED /* MapHomeView.swift */, 78FD430803560F137BDECEE8 /* Models.swift */, 5F6E801146E6DFDCE7E3563A /* PlaceDetailView.swift */, F90532124C001E192BF96B55 /* SubmissionView.swift */, F8A14FD33FC816DB3DE345D0 /* iYosiApp.swift */, 3A94BB07224E6FBA2B7113D3 /* Assets.xcassets */, 75B13235D681EFADD9C29A79 /* Info.plist */,);
 			path = iYosi;
 			sourceTree = "<group>";
 		};
@@ -127,7 +147,7 @@
 		1CDF2F71A52B082132B04DFF /* phase:sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (72B94A439FA16CE34ADCD5F7 /* APIClient.swift */, 512D54E66641F634C72B078C /* AccountView.swift */, D5C7C47481CFC984EE6D07BA /* AppState.swift */, 517F97832913EEAC72473110 /* MapHomeView.swift */, C28E3B592A560C32484F497E /* Models.swift */, 2F572B784FB22C89DBA4141A /* PlaceDetailView.swift */, 311B8609DA9A5CF4EDBCAEF7 /* SubmissionView.swift */, CE05C34EFA24179A7E7662E3 /* iYosiApp.swift */,);
+			files = (72B94A439FA16CE34ADCD5F7 /* APIClient.swift */, 512D54E66641F634C72B078C /* AccountView.swift */, D5C7C47481CFC984EE6D07BA /* AppState.swift */, 10D15A199F54F09B37829B2D /* DesignPreview.swift */, D9519749007E47D80E7D619A /* GuideTheme.swift */, 517F97832913EEAC72473110 /* MapHomeView.swift */, C28E3B592A560C32484F497E /* Models.swift */, 2F572B784FB22C89DBA4141A /* PlaceDetailView.swift */, 311B8609DA9A5CF4EDBCAEF7 /* SubmissionView.swift */, CE05C34EFA24179A7E7662E3 /* iYosiApp.swift */,);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C02F1309AF4906C92F1EAD44 /* phase:resources */ = {

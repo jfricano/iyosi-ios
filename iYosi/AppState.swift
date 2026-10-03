@@ -32,6 +32,9 @@ enum CredentialStore {
 @MainActor final class AppState: ObservableObject {
     @Published var baseURL: String {
         didSet {
+            #if DEBUG
+            if DesignPreview.enabled { return }
+            #endif
             UserDefaults.standard.set(baseURL, forKey: "apiBaseURL")
             if baseURL != oldValue { signOut() }
         }
@@ -40,12 +43,30 @@ enum CredentialStore {
     @Published private(set) var account: Account?
     @Published var accountError: String?
 
-    var api: APIClient { APIClient(baseURL: baseURL.trimmingCharacters(in: .whitespacesAndNewlines), token: token) }
+    var api: APIClient {
+        #if DEBUG
+        if DesignPreview.enabled {
+            return APIClient(baseURL: "http://localhost:8000", token: token, session: DesignPreview.session)
+        }
+        #endif
+        return APIClient(baseURL: baseURL.trimmingCharacters(in: .whitespacesAndNewlines), token: token)
+    }
     var isSignedIn: Bool { token != nil }
+    var isDesignPreview: Bool {
+        #if DEBUG
+        return DesignPreview.enabled
+        #else
+        return false
+        #endif
+    }
 
     init() {
         baseURL = UserDefaults.standard.string(forKey: "apiBaseURL") ?? "http://localhost:8000"
+        #if DEBUG
+        token = DesignPreview.enabled ? (DesignPreview.signedIn ? "design-preview" : nil) : CredentialStore.read()
+        #else
         token = CredentialStore.read()
+        #endif
     }
 
     func authenticate(email: String, password: String, registering: Bool) async throws {
@@ -64,7 +85,11 @@ enum CredentialStore {
         }
     }
     func signOut() {
+        #if DEBUG
+        if !DesignPreview.enabled { CredentialStore.save(nil) }
+        #else
         CredentialStore.save(nil)
+        #endif
         token = nil
         account = nil
         accountError = nil
@@ -73,6 +98,7 @@ enum CredentialStore {
 
 final class ForegroundLocation: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
+    private var locationRequested = false
     @Published var point: GeoPoint?
     @Published var message: String?
 
@@ -83,22 +109,32 @@ final class ForegroundLocation: NSObject, ObservableObject, CLLocationManagerDel
     }
     func locate() {
         message = nil
+        locationRequested = true
         switch manager.authorizationStatus {
         case .notDetermined: manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways: manager.requestLocation()
-        case .denied, .restricted: message = "Location access is off. Search and map browsing still work."
-        @unknown default: message = "Location is unavailable."
+        case .denied, .restricted:
+            locationRequested = false
+            message = "Location access is off. Search and map browsing still work."
+        @unknown default:
+            locationRequested = false
+            message = "Location is unavailable."
         }
     }
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+        if locationRequested && (manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways) {
             manager.requestLocation()
+        } else if locationRequested && (manager.authorizationStatus == .denied || manager.authorizationStatus == .restricted) {
+            locationRequested = false
+            message = "Location access is off. Search and map browsing still work."
         }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationRequested = false
         if let coordinate = locations.last?.coordinate { point = GeoPoint(coordinate) }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        message = error.localizedDescription
+        locationRequested = false
+        message = "Location is unavailable. Search and map browsing still work."
     }
 }
