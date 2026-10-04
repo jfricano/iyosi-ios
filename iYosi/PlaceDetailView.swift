@@ -313,6 +313,8 @@ struct ReviewForm: View {
     @State private var bodyText = ""
     @State private var busy = false
     @State private var error: String?
+    @State private var hasExisting = false
+    @State private var confirmingDelete = false
 
     var body: some View {
         NavigationStack {
@@ -331,19 +333,39 @@ struct ReviewForm: View {
                         .foregroundStyle(bodyText.count > 1000 ? GuideTheme.warning : GuideTheme.muted)
                 } header: { Text("Your review") }
                     .listRowBackground(GuideTheme.surface)
+                if hasExisting {
+                    Section {
+                        Button("Delete my review", role: .destructive) { confirmingDelete = true }.disabled(busy)
+                    }.listRowBackground(GuideTheme.surface)
+                }
                 if let error {
                     Section { GuideNotice(text: error, symbol: "exclamationmark.triangle", warning: true) }
                         .listRowBackground(GuideTheme.surface)
                 }
             }
             .guideForm()
-            .navigationTitle("Rate place")
+            .navigationTitle(hasExisting ? "Edit your review" : "Rate place")
             .navigationBarTitleDisplayMode(.inline)
+            .task { await loadExisting() }
+            .confirmationDialog("Delete your review?", isPresented: $confirmingDelete) {
+                Button("Delete review", role: .destructive) { Task { await deleteReview() } }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button(busy ? "Saving…" : "Save") { Task { await save() } }.disabled(busy || bodyText.count > 1000) }
             }
         }
+    }
+    private func loadExisting() async {
+        // Older servers lack GET reviews/me; the form then starts blank as before.
+        guard let existing = try? await state.api.myReview(placeID) else { return }
+        stars = existing.stars; bodyText = existing.body ?? ""; hasExisting = true
+    }
+    private func deleteReview() async {
+        busy = true; error = nil
+        do { try await state.api.deleteMyReview(placeID); dismiss() }
+        catch { self.error = error.localizedDescription }
+        busy = false
     }
     private func save() async {
         busy = true; error = nil
