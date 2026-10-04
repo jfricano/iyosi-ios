@@ -4,14 +4,24 @@ struct APIClient {
     let baseURL: String
     let token: String?
     private let session: URLSession
+    /// Called with the rejected token when the API answers 401, so an expired sign-in is cleared.
+    private let onUnauthenticated: (@MainActor (String) -> Void)?
 
-    init(baseURL: String, token: String? = nil, session: URLSession = .shared) {
+    init(baseURL: String, token: String? = nil, session: URLSession = .shared, onUnauthenticated: (@MainActor (String) -> Void)? = nil) {
         self.baseURL = baseURL
         self.token = token
         self.session = session
+        self.onUnauthenticated = onUnauthenticated
     }
 
     private func request<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: (any Encodable)? = nil, idempotencyKey: String? = nil) async throws -> T {
+        let data = try await send(path, method: method, query: query, body: body, idempotencyKey: idempotencyKey)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return try decoder.decode(T.self, from: data)
+    }
+
+    private func send(_ path: String, method: String, query: [URLQueryItem] = [], body: (any Encodable)? = nil, idempotencyKey: String? = nil) async throws -> Data {
         guard let root = URL(string: baseURL), let scheme = root.scheme?.lowercased(),
               ["http", "https"].contains(scheme), root.host != nil,
               (scheme == "https" || ["localhost", "127.0.0.1"].contains(root.host!.lowercased()) || root.host!.hasSuffix(".local")),
@@ -35,16 +45,21 @@ struct APIClient {
         let data: Data
         let response: URLResponse
         do { (data, response) = try await session.data(for: urlRequest) }
-        catch is CancellationError { throw CancellationError() }
-        catch { throw APIError.transport(error.localizedDescription) }
+        catch {
+            // URLSession reports a cancelled task as URLError(.cancelled), not CancellationError.
+            if error is CancellationError || Task.isCancelled { throw CancellationError() }
+            throw APIError.transport(error.localizedDescription)
+        }
         guard let http = response as? HTTPURLResponse else { throw APIError.transport("Invalid response") }
         guard (200..<300).contains(http.statusCode) else {
-            let error = try? JSONDecoder().decode(APIErrorBody.self, from: data)
-            throw APIError.server(http.statusCode, error?.message ?? "Server returned \(http.statusCode).", error?.code ?? "http_error")
+            let errorDecoder = JSONDecoder()
+            errorDecoder.keyDecodingStrategy = .convertFromSnakeCase
+            let error = try? errorDecoder.decode(APIErrorBody.self, from: data)
+            let code = error?.code ?? "http_error"
+            if http.statusCode == 401, code == "unauthenticated", let token { await onUnauthenticated?(token) }
+            throw APIError.server(http.statusCode, error?.displayMessage ?? "Server returned \(http.statusCode).", code)
         }
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return try decoder.decode(T.self, from: data)
+        return data
     }
 
     private struct AnyEncodable: Encodable {
@@ -93,6 +108,17 @@ struct APIClient {
     }
     func review(_ id: String, payload: ReviewRequest) async throws -> PublicReview {
         try await request("/v1/places/\(escaped(id))/reviews/me", method: "PUT", body: payload)
+    }
+    /// The signed-in user's own review, or nil when there is none (404) or the server predates this endpoint.
+    func myReview(_ id: String) async throws -> PublicReview? {
+        do { return try await request("/v1/places/\(escaped(id))/reviews/me") as PublicReview }
+        catch let error as APIError {
+            if case .server(let status, _, _) = error, [404, 405].contains(status) { return nil }
+            throw error
+        }
+    }
+    func deleteMyReview(_ id: String) async throws {
+        _ = try await send("/v1/places/\(escaped(id))/reviews/me", method: "DELETE")
     }
     func report(_ payload: ReportRequest, key: String) async throws -> Acknowledgement {
         try await request("/v1/reports", method: "POST", body: payload, idempotencyKey: key)

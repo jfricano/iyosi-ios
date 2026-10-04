@@ -47,7 +47,7 @@ struct AuthView: View {
                     }.frame(maxWidth: .infinity)
                 }
                 .buttonStyle(GuideButtonStyle())
-                .disabled(busy || email.isEmpty || password.isEmpty || (registering && (!adultAttested || password.count < 12 || password.count > 128)))
+                .disabled(busy || email.trimmingCharacters(in: .whitespacesAndNewlines).count < 5 || password.isEmpty || (registering && (!adultAttested || password.count < 12 || password.count > 128)))
             } header: {
                 Text(registering ? "Create an adult account" : "Sign in to contribute")
             } footer: {
@@ -137,7 +137,7 @@ struct AccountView: View {
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } } }
             .confirmationDialog("Request account deletion?", isPresented: $showDeletionConfirmation) {
                 Button("Submit deletion request", role: .destructive) { Task { await requestDeletion() } }
-            } message: { Text("An administrator will review your request.") }
+            } message: { Text("An administrator will review your request. Once it is approved, your reviews are removed and the text you wrote in submissions, confirmations and reports is erased. Places already published stay in the guide.") }
             .task(id: state.token) { await load() }
             .guideScreen()
         }

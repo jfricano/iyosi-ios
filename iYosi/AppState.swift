@@ -49,7 +49,9 @@ enum CredentialStore {
             return APIClient(baseURL: "http://localhost:8000", token: token, session: DesignPreview.session)
         }
         #endif
-        return APIClient(baseURL: baseURL.trimmingCharacters(in: .whitespacesAndNewlines), token: token)
+        return APIClient(baseURL: baseURL.trimmingCharacters(in: .whitespacesAndNewlines), token: token) { [weak self] rejected in
+            if self?.token == rejected { self?.signOut() }
+        }
     }
     var isSignedIn: Bool { token != nil }
     var isDesignPreview: Bool {
@@ -70,8 +72,11 @@ enum CredentialStore {
     }
 
     func authenticate(email: String, password: String, registering: Bool) async throws {
+        let server = baseURL
         let credentials = registering ? try await api.register(email: email, password: password)
                                       : try await api.login(email: email, password: password)
+        // Don't keep one server's token if the server setting changed while signing in.
+        guard baseURL == server else { return }
         token = credentials.accessToken
         CredentialStore.save(token)
         await refreshAccount()

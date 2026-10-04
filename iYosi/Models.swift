@@ -180,7 +180,20 @@ enum APIError: LocalizedError {
     }
     var code: String? { if case .server(_, _, let code) = self { code } else { nil } }
 }
-struct APIErrorBody: Decodable { let code: String; let message: String }
+struct APIErrorBody: Decodable {
+    struct FieldError: Decodable { let field: String; let message: String }
+    let code: String
+    let message: String
+    let fieldErrors: [FieldError]?
+
+    /// Adds the first field error, so "Check the submitted fields" says which field.
+    var displayMessage: String {
+        guard let first = fieldErrors?.first else { return message }
+        // Paths look like "body.location.lat"; cross-field rules report just "body".
+        guard first.field != "body", let field = first.field.split(separator: ".").last else { return "\(message): \(first.message)." }
+        return "\(message): \(field.replacingOccurrences(of: "_", with: " ")), \(first.message)."
+    }
+}
 
 enum DateText {
     static func display(_ value: String?) -> String {

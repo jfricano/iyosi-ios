@@ -2,7 +2,7 @@ import MapKit
 import SwiftUI
 
 private enum DetailSheet: Identifiable {
-    case confirm, review, reportPlace, reportReview(String), correction
+    case confirm, review, reportPlace, reportReview(String), correction, merged(String)
     var id: String {
         switch self {
         case .confirm: "confirm"
@@ -10,6 +10,7 @@ private enum DetailSheet: Identifiable {
         case .reportPlace: "report-place"
         case .reportReview(let id): "report-\(id)"
         case .correction: "correction"
+        case .merged(let id): "merged-\(id)"
         }
     }
 }
@@ -47,6 +48,7 @@ struct PlaceDetailView: View {
                 case .reportReview(let id): AuthRequiredView { ReportForm(targetType: "review", targetID: id) }
                 case .correction:
                     if let place { SubmissionView(initialPoint: place.location, correcting: place) }
+                case .merged(let id): PlaceDetailView(placeID: id)
                 }
             }
             .task(id: placeID) { await load() }
@@ -84,7 +86,9 @@ struct PlaceDetailView: View {
                         GuideNotice(text: "This place is closed. No directions are provided.", symbol: "xmark.circle", warning: true)
                     }
                     if let merged = place.mergedInto {
-                        GuideNotice(text: "This place was merged into \(merged).", symbol: "arrow.triangle.merge")
+                        GuideNotice(text: "This place was merged into another record.", symbol: "arrow.triangle.merge")
+                        Button("Open the current record") { sheet = .merged(merged) }
+                            .font(GuideTheme.heading(15, relativeTo: .subheadline)).frame(minHeight: 44)
                     }
                 }
                 .guideCard()
@@ -259,7 +263,7 @@ struct ConfirmationForm: View {
                         Text("Changed").tag("changed")
                         Text("Gone").tag("gone")
                     }
-                    DatePicker("Observed", selection: $date, in: Date().addingTimeInterval(-30 * 86400)...Date(), displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("Observed", selection: $date, in: Date().addingTimeInterval(-29 * 86400)...Date(), displayedComponents: [.date, .hourAndMinute])
                 } header: { Text("Your observation") }
                     .listRowBackground(GuideTheme.surface)
                 Section {
@@ -309,6 +313,8 @@ struct ReviewForm: View {
     @State private var bodyText = ""
     @State private var busy = false
     @State private var error: String?
+    @State private var hasExisting = false
+    @State private var confirmingDelete = false
 
     var body: some View {
         NavigationStack {
@@ -327,19 +333,39 @@ struct ReviewForm: View {
                         .foregroundStyle(bodyText.count > 1000 ? GuideTheme.warning : GuideTheme.muted)
                 } header: { Text("Your review") }
                     .listRowBackground(GuideTheme.surface)
+                if hasExisting {
+                    Section {
+                        Button("Delete my review", role: .destructive) { confirmingDelete = true }.disabled(busy)
+                    }.listRowBackground(GuideTheme.surface)
+                }
                 if let error {
                     Section { GuideNotice(text: error, symbol: "exclamationmark.triangle", warning: true) }
                         .listRowBackground(GuideTheme.surface)
                 }
             }
             .guideForm()
-            .navigationTitle("Rate place")
+            .navigationTitle(hasExisting ? "Edit your review" : "Rate place")
             .navigationBarTitleDisplayMode(.inline)
+            .task { await loadExisting() }
+            .confirmationDialog("Delete your review?", isPresented: $confirmingDelete) {
+                Button("Delete review", role: .destructive) { Task { await deleteReview() } }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button(busy ? "Saving…" : "Save") { Task { await save() } }.disabled(busy || bodyText.count > 1000) }
             }
         }
+    }
+    private func loadExisting() async {
+        // Older servers lack GET reviews/me; the form then starts blank as before.
+        guard let existing = try? await state.api.myReview(placeID) else { return }
+        stars = existing.stars; bodyText = existing.body ?? ""; hasExisting = true
+    }
+    private func deleteReview() async {
+        busy = true; error = nil
+        do { try await state.api.deleteMyReview(placeID); dismiss() }
+        catch { self.error = error.localizedDescription }
+        busy = false
     }
     private func save() async {
         busy = true; error = nil
