@@ -4,8 +4,8 @@ This is the handoff for the independent iOS review, which ran alongside reviews 
 
 ## State
 
-- **On hold.** iOS work is paused by the project owner. Keep PR #2 as a draft, and don't merge it until it has been built and tested in dev mode (see below).
-- **Branch:** `claude/project-thread-d74j9t`. Draft PR jfricano/iyosi-ios#2, based on `main` (`dbbdea1`).
+- **Merged before building.** The app isn't live, so the project owner chose to merge PR #2 before compiling it. The first Xcode build after the merge may need small compile fixes. After that, run the dev-mode checks below.
+- **Branch:** `claude/project-thread-d74j9t`. PR jfricano/iyosi-ios#2, based on `main` (`dbbdea1`).
 - **Not compiled yet.** The review ran without Xcode. The first step when picking this up is to build in Xcode (iOS 17 target, Swift 5.9). Then smoke-test the flows listed under "Verify".
 - **API compatibility:** this branch works against iyosi-api `main` (`71d7af6`) and against iyosi-api PR #2. The only thing that depends on the API PR is review prefill and delete. Without that PR, the review form simply starts blank, as it did before.
 
