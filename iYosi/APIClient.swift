@@ -4,11 +4,14 @@ struct APIClient {
     let baseURL: String
     let token: String?
     private let session: URLSession
+    /// Called with the rejected token when the API answers 401, so an expired sign-in is cleared.
+    private let onUnauthenticated: (@MainActor (String) -> Void)?
 
-    init(baseURL: String, token: String? = nil, session: URLSession = .shared) {
+    init(baseURL: String, token: String? = nil, session: URLSession = .shared, onUnauthenticated: (@MainActor (String) -> Void)? = nil) {
         self.baseURL = baseURL
         self.token = token
         self.session = session
+        self.onUnauthenticated = onUnauthenticated
     }
 
     private func request<T: Decodable>(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: (any Encodable)? = nil, idempotencyKey: String? = nil) async throws -> T {
@@ -42,8 +45,12 @@ struct APIClient {
         }
         guard let http = response as? HTTPURLResponse else { throw APIError.transport("Invalid response") }
         guard (200..<300).contains(http.statusCode) else {
-            let error = try? JSONDecoder().decode(APIErrorBody.self, from: data)
-            throw APIError.server(http.statusCode, error?.message ?? "Server returned \(http.statusCode).", error?.code ?? "http_error")
+            let errorDecoder = JSONDecoder()
+            errorDecoder.keyDecodingStrategy = .convertFromSnakeCase
+            let error = try? errorDecoder.decode(APIErrorBody.self, from: data)
+            let code = error?.code ?? "http_error"
+            if http.statusCode == 401, code == "unauthenticated", let token { await onUnauthenticated?(token) }
+            throw APIError.server(http.statusCode, error?.displayMessage ?? "Server returned \(http.statusCode).", code)
         }
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase

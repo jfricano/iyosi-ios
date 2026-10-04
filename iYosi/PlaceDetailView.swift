@@ -2,7 +2,7 @@ import MapKit
 import SwiftUI
 
 private enum DetailSheet: Identifiable {
-    case confirm, review, reportPlace, reportReview(String), correction
+    case confirm, review, reportPlace, reportReview(String), correction, merged(String)
     var id: String {
         switch self {
         case .confirm: "confirm"
@@ -10,6 +10,7 @@ private enum DetailSheet: Identifiable {
         case .reportPlace: "report-place"
         case .reportReview(let id): "report-\(id)"
         case .correction: "correction"
+        case .merged(let id): "merged-\(id)"
         }
     }
 }
@@ -47,6 +48,7 @@ struct PlaceDetailView: View {
                 case .reportReview(let id): AuthRequiredView { ReportForm(targetType: "review", targetID: id) }
                 case .correction:
                     if let place { SubmissionView(initialPoint: place.location, correcting: place) }
+                case .merged(let id): PlaceDetailView(placeID: id)
                 }
             }
             .task(id: placeID) { await load() }
@@ -84,7 +86,9 @@ struct PlaceDetailView: View {
                         GuideNotice(text: "This place is closed. No directions are provided.", symbol: "xmark.circle", warning: true)
                     }
                     if let merged = place.mergedInto {
-                        GuideNotice(text: "This place was merged into \(merged).", symbol: "arrow.triangle.merge")
+                        GuideNotice(text: "This place was merged into another record.", symbol: "arrow.triangle.merge")
+                        Button("Open the current record") { sheet = .merged(merged) }
+                            .font(GuideTheme.heading(15, relativeTo: .subheadline)).frame(minHeight: 44)
                     }
                 }
                 .guideCard()
@@ -259,7 +263,7 @@ struct ConfirmationForm: View {
                         Text("Changed").tag("changed")
                         Text("Gone").tag("gone")
                     }
-                    DatePicker("Observed", selection: $date, in: Date().addingTimeInterval(-30 * 86400)...Date(), displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("Observed", selection: $date, in: Date().addingTimeInterval(-29 * 86400)...Date(), displayedComponents: [.date, .hourAndMinute])
                 } header: { Text("Your observation") }
                     .listRowBackground(GuideTheme.surface)
                 Section {

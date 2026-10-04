@@ -47,7 +47,7 @@ struct AuthView: View {
                     }.frame(maxWidth: .infinity)
                 }
                 .buttonStyle(GuideButtonStyle())
-                .disabled(busy || email.isEmpty || password.isEmpty || (registering && (!adultAttested || password.count < 12 || password.count > 128)))
+                .disabled(busy || email.trimmingCharacters(in: .whitespacesAndNewlines).count < 5 || password.isEmpty || (registering && (!adultAttested || password.count < 12 || password.count > 128)))
             } header: {
                 Text(registering ? "Create an adult account" : "Sign in to contribute")
             } footer: {

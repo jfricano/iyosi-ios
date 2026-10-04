@@ -353,7 +353,9 @@ struct MapHomeView: View {
     }
     private func searchAddress() async {
         suggestions = []; suggestionProvider = nil; searchError = nil
-        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        // The API accepts 3 to 100 characters.
+        let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = String(String.UnicodeScalarView(trimmed.unicodeScalars.prefix(100)))
         guard query.count >= 3 else { return }
         try? await Task.sleep(for: .milliseconds(350))
         guard !Task.isCancelled else { return }
