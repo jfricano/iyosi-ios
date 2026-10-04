@@ -35,8 +35,11 @@ struct APIClient {
         let data: Data
         let response: URLResponse
         do { (data, response) = try await session.data(for: urlRequest) }
-        catch is CancellationError { throw CancellationError() }
-        catch { throw APIError.transport(error.localizedDescription) }
+        catch {
+            // URLSession reports a cancelled task as URLError(.cancelled), not CancellationError.
+            if error is CancellationError || Task.isCancelled { throw CancellationError() }
+            throw APIError.transport(error.localizedDescription)
+        }
         guard let http = response as? HTTPURLResponse else { throw APIError.transport("Invalid response") }
         guard (200..<300).contains(http.statusCode) else {
             let error = try? JSONDecoder().decode(APIErrorBody.self, from: data)

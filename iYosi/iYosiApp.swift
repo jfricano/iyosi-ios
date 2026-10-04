@@ -3,6 +3,7 @@ import SwiftUI
 @main struct iYosiApp: App {
     @StateObject private var state = AppState()
     @AppStorage("adultAccessAccepted") private var adultAccessAccepted = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -17,6 +18,10 @@ import SwiftUI
             .environmentObject(state)
             .tint(GuideTheme.tealInk)
             .task { await state.refreshAccount() }
+            // Sign-in tokens last 24 hours; recheck on return so an expired one signs out cleanly.
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { Task { await state.refreshAccount() } }
+            }
         }
     }
 
