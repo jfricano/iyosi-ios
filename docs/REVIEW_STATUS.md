@@ -30,10 +30,11 @@ This is the handoff for the independent iOS review, which ran alongside reviews 
 The API thread is still working through these tradeoffs (see the project's `reviews/api.md`). Each one would need iOS work if adopted:
 
 - **R5, duplicate override.** If the API adds an `acknowledge_nearby` flag, `SubmissionView` needs a way to submit anyway. Today it disables Submit whenever a place is within 50 m (`closeDuplicates`).
-- **R4, deleting content with an account.** If deletion removes or blanks reviews and submissions, update the copy in `PrivacyNoticeView` (`iYosiApp.swift`) and the deletion confirmation in `AccountView`.
+- **R4, deleting content with an account: decided and done.** iyosi-api#2 now removes the person's reviews and blanks their free text when an admin approves the deletion. The privacy notice and the deletion confirmation in this PR say so. If that API change is dropped, revert this copy.
+- **R2, correction publish: decided.** Corrections now keep blank optional fields and the place's current status. This is server-only.
 - **R7, password change or reset, token revocation.** If these are added, they need new Account screens.
 - **R1, per-account rate limits.** No iOS change is expected, because iOS already shows 429 messages from the server.
-- **R2 and R3** are server-only.
+- **R3** is server-only.
 - **When iyosi-api PR #2 merges,** nothing changes in iOS. Re-run verify step 4 against the deployed server.
 
 ## Still open (iOS)
