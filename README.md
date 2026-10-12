@@ -23,7 +23,7 @@ The admin moderation interface and public-launch age assurance/privacy operation
 
 ## Verification
 
-Debug and Release builds pass for a generic arm64 iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). The landing-page design update was checked on an iPhone 18 Pro simulator using read-only fictional fixtures, including dark appearance and accessibility text sizes. Live account and contribution requests were not repeated for that visual check. The normal database contains no published places until an administrator publishes reviewed submissions.
+Before the October review changes, Debug and Release builds were recorded as passing for a generic arm64 iOS Simulator with Xcode 27.0 and the iOS 27.0 SDK (`CODE_SIGNING_ALLOWED=NO`). Those checks do not verify the review changes merged in PR #2. The [current review handoff](docs/REVIEW_STATUS.md) records that those changes have not yet been compiled and lists the build and dev-mode checks still needed. The landing-page design update was checked on an iPhone 18 Pro simulator using read-only fictional fixtures, including dark appearance and accessibility text sizes. Live account and contribution requests were not repeated for that visual check. The normal database contains no published places until an administrator publishes reviewed submissions.
 
 ## Shared design
 
@@ -32,3 +32,7 @@ The app follows the landing page's warm paper surfaces, ink typography, teal rev
 ## License
 
 Copyright © 2026 Orca Solutions. All rights reserved. See [LICENSE.md](LICENSE.md). Public visibility does not make this app open source.
+
+## Delivery workflow
+
+See [the delivery workflow](docs/WORKFLOW.md) for author verification, focused review of high-risk changes and scoped release authority. Existing project behavior and setup commands above remain authoritative.
