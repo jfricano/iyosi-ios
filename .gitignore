@@ -3,3 +3,6 @@
 *.xcodeproj/xcuserdata/
 DerivedData/
 *.xcuserstate
+
+# Local Claude Code settings and state.
+/.claude/
