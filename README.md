@@ -32,3 +32,7 @@ The app follows the landing page's warm paper surfaces, ink typography, teal rev
 ## License
 
 Copyright © 2026 Orca Solutions. All rights reserved. See [LICENSE.md](LICENSE.md). Public visibility does not make this app open source.
+
+## Shared agent instructions
+
+`AGENTS.md` and `CLAUDE.md` are shared project instructions and stay tracked in this repository so local and cloud agents can read them. Keep personal overrides in ignored `CLAUDE.local.md`; credentials and session state stay private. Existing project-specific instructions and permissions continue to apply.
