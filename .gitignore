@@ -3,3 +3,6 @@
 *.xcodeproj/xcuserdata/
 DerivedData/
 *.xcuserstate
+
+# Personal agent overrides stay local.
+CLAUDE.local.md
