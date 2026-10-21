@@ -31,4 +31,4 @@ The app follows the landing page's warm paper surfaces, ink typography, teal rev
 
 ## License
 
-Copyright © 2026 Orca Solutions. All rights reserved. See [LICENSE.md](LICENSE.md). Public visibility does not make this app open source.
+Released under the [MIT License](LICENSE). Copyright © 2026 Jason Fricano.
